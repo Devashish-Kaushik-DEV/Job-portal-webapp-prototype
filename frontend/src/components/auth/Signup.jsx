@@ -1,6 +1,6 @@
-import React, { useState } from "react"
-import { Link } from "react-router-dom"
-import Navbar from "../shared/Navbar"
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Navbar from "../shared/Navbar";
 import {
   Card,
   CardContent,
@@ -8,11 +8,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { RadioGroup } from "@/components/ui/radio-group"
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { USER_API_END_POINT } from "@/utils/constant";
+import axios from "axios";
+import { toast } from "sonner";
 
 const Signup = () => {
   const [input, setInput] = useState({
@@ -20,8 +23,10 @@ const Signup = () => {
     email: "",
     phoneNumber: "",
     password: "",
-    role: ""
+    role: "",
   });
+
+  const navigate = useNavigate();
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -29,7 +34,23 @@ const Signup = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log(input);
+
+    try {
+      const res = await axios.post(`${USER_API_END_POINT}/register`, input, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+
+      if (res.data.success) {
+        navigate("/login");
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      toast.error(error?.response?.data?.message || "Something went wrong.");
+    }
   };
 
   return (
@@ -45,7 +66,7 @@ const Signup = () => {
             <form onSubmit={submitHandler}>
               <div className="flex flex-col gap-6">
                 <div className="grid gap-2">
-                  <Label htmlFor="full-name">Full Name</Label>
+                  <Label htmlFor="fullname">Full Name</Label>
                   <Input
                     type="text"
                     value={input.fullname}
@@ -55,6 +76,7 @@ const Signup = () => {
                     required
                   />
                 </div>
+
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -66,8 +88,9 @@ const Signup = () => {
                     required
                   />
                 </div>
+
                 <div className="grid gap-2">
-                  <Label htmlFor="phone">Phone Number</Label>
+                  <Label htmlFor="phoneNumber">Phone Number</Label>
                   <Input
                     type="tel"
                     value={input.phoneNumber}
@@ -77,6 +100,7 @@ const Signup = () => {
                     required
                   />
                 </div>
+
                 <div className="grid gap-2">
                   <Label htmlFor="password">Password</Label>
                   <Input
@@ -88,49 +112,38 @@ const Signup = () => {
                     required
                   />
                 </div>
+
                 <div className="grid gap-2">
                   <Label>User Type</Label>
                   <RadioGroup
                     className="flex gap-6"
                     value={input.role}
                     onValueChange={(value) =>
-                      setInput({ ...input, role: value })
+                      setInput({ ...input, role: value.toLowerCase() })
                     }
                   >
                     <div className="flex items-center space-x-2">
-                      <Input
-                        type="radio"
-                        name="role"
-                        value="Applicant"
-                        checked={input.role === "Applicant"}
-                        className="cursor-pointer"
-                        onChange={changeEventHandler}
-                      />
+                      <RadioGroupItem value="applicant" id="applicant" />
                       <Label htmlFor="applicant" className="cursor-pointer">
                         Applicant
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Input
-                        type="radio"
-                        name="role"
-                        value="Recruiter"
-                        checked={input.role === "Recruiter"}
-                        className="cursor-pointer"
-                        onChange={changeEventHandler}
-                      />
+                      <RadioGroupItem value="recruiter" id="recruiter" />
                       <Label htmlFor="recruiter" className="cursor-pointer">
                         Recruiter
                       </Label>
                     </div>
                   </RadioGroup>
                 </div>
+
                 <Button type="submit" className="w-full cursor-pointer">
                   Sign Up
                 </Button>
               </div>
             </form>
           </CardContent>
+
           <CardFooter className="flex flex-col items-center gap-2">
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}

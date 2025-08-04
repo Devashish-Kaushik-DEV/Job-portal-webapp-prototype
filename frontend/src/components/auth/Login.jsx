@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
 import {
   Card,
@@ -26,9 +27,22 @@ const Login = () => {
   };
 
   const submitHandler = async (e) => {
-    e.preventDefault();
-    console.log(input);
-  };
+      e.preventDefault();
+      try {
+        const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
+          headers:{
+            "Content-Type":"application/json"
+          },
+          withCredentials:true
+        })
+        if(res.data.success){
+          navigate("/")
+          toast.success(res.data.message);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
   return (
     <div>
