@@ -16,6 +16,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { USER_API_END_POINT } from "@/utils/constant";
 import axios from "axios";
 import { toast } from "sonner";
+import { setLoading } from "@/redux/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { Loader2 } from "lucide-react";
 
 const Signup = () => {
   const [input, setInput] = useState({
@@ -25,7 +28,8 @@ const Signup = () => {
     password: "",
     role: "",
   });
-
+  const { loading } = useSelector((store) => store.auth);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const changeEventHandler = (e) => {
@@ -36,6 +40,7 @@ const Signup = () => {
     e.preventDefault();
 
     try {
+      dispatch(setLoading(true));
       const res = await axios.post(`${USER_API_END_POINT}/register`, input, {
         headers: {
           "Content-Type": "application/json",
@@ -50,6 +55,8 @@ const Signup = () => {
     } catch (error) {
       console.error("Signup error:", error);
       toast.error(error?.response?.data?.message || "Something went wrong.");
+    } finally{
+      dispatch(setLoading(false));
     }
   };
 
@@ -136,10 +143,17 @@ const Signup = () => {
                     </div>
                   </RadioGroup>
                 </div>
-
-                <Button type="submit" className="w-full cursor-pointer">
-                  Sign Up
-                </Button>
+                {loading ? (
+                  <Button>
+                    {" "}
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Please wait
+                  </Button>
+                ) : (
+                  <Button type="submit" className="w-full cursor-pointer">
+                    Signup
+                  </Button>
+                )}
               </div>
             </form>
           </CardContent>
