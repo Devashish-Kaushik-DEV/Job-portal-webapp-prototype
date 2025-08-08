@@ -1,6 +1,6 @@
 import React from "react";
 import LatestJobCards from "./LatestJobCards";
-const randomJobs = [1, 2, 3, 4, 5, 6, 7, 8];
+const randomJobs = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const LatestJobs = () => {
   return (
     <div className="max-w-7xl mx-auto my-20">
