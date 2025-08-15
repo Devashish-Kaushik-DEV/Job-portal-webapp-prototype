@@ -7,12 +7,13 @@ import { Badge } from "./ui/badge";
 import { Label } from "./ui/label";
 import AppliedJobTable from "./AppliedJobTable";
 import UpdateProfileDialog from "./UpdateProfileDialog";
+import { useSelector } from "react-redux";
 
-const skills = ["Html", "CSS", "JavaScript", "Python"];
 const isResume = true;
 
 const Profile = () => {
   const [open, setOpen] = useState(false);
+  const {user} = useSelector(store=>store.auth)
   return (
     <div>
       <Navbar />
@@ -26,8 +27,8 @@ const Profile = () => {
               />
             </Avatar>
             <div>
-              <h1 className="font-medium text-xl">Full Name</h1>
-              <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
+              <h1 className="font-medium text-xl">{user?.fullname}</h1>
+              <p>{user?.profile?.bio}</p>
             </div>
           </div>
           <Button onClick={() => setOpen(true)} className="text-right" variant="outline">
@@ -37,18 +38,18 @@ const Profile = () => {
         <div>
           <div className="flex items-center gap-3 my-2">
             <Mail />
-            <span>Devashish Kaushik</span>
+            <span>{user?.email}</span>
           </div>
           <div className="flex items-center gap-3 my-2">
             <Contact />
-            <span>9090909090</span>
+            <span>{user?.phoneNumber}</span>
           </div>
         </div>
         <div className="my-4">
           <h1>Skills</h1>
           <div className="flex items-center gap-1.5">
-            {skills.length != 0 ? (
-              skills.map((item, index) => <Badge key={index}>{item}</Badge>)
+            {user?.profile?.skills.length != 0 ? (
+              user?.profile?.skills.map((item, index) => <Badge key={index}>{item}</Badge>)
             ) : (
               <span>NA</span>
             )}
@@ -59,10 +60,10 @@ const Profile = () => {
           {isResume ? (
             <a
               target="blank"
-              href="http://example.com/"
-              className="text-blue-500 w-full hover:underline cursor:pointer"
+              href={user?.profile?.resume}
+              className="text-blue-500 w-full hover:underline cursor-pointer"
             >
-              Devashish Kaushik
+              {user?.profile?.resumeOriginalName}
             </a>
           ) : (
             <span>NA</span>
